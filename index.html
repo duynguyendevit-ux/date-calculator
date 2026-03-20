@@ -832,8 +832,8 @@
                         // Populate column dropdowns
                         populateColumnDropdowns();
                         
-                        // Show sheet preview
-                        showSheetPreview(sheet1Name);
+                        // Show sheet preview (10 rows)
+                        showSheetPreview(sheet1Name, 10);
                         
                         document.getElementById('sheetSelector').style.display = 'block';
                         showResult('excelResult', `✓ Loaded ${workbook.SheetNames.length} sheets`, false);
@@ -874,66 +874,6 @@
                     key2Select.innerHTML += `<option value="${h}">${h}</option>`;
                 }
             });
-            
-            // Auto-select if there's a good match
-            autoSelectBestMatch(headers1, headers2);
-        }
-
-        function autoSelectBestMatch(headers1, headers2) {
-            const sheet1Name = document.getElementById('sheet1').value;
-            const sheet2Name = document.getElementById('sheet2').value;
-            
-            if (!sheet1Name || !sheet2Name || !sheets[sheet1Name] || !sheets[sheet2Name]) return;
-            
-            // Find common fields (case-insensitive partial match)
-            let bestMatch1 = '';
-            let bestMatch2 = '';
-            let maxScore = 0;
-            
-            headers1.forEach(h1 => {
-                if (!h1 || typeof h1 !== 'string' || h1.trim().length < 2) return;
-                headers2.forEach(h2 => {
-                    if (!h2 || typeof h2 !== 'string' || h2.trim().length < 2) return;
-                    
-                    const h1Lower = String(h1).toLowerCase().trim();
-                    const h2Lower = String(h2).toLowerCase().trim();
-                    
-                    // Skip if just numbers or single chars
-                    if (/^\d+$/.test(h1Lower) || /^\d+$/.test(h2Lower)) return;
-                    if (h1Lower.length < 2 || h2Lower.length < 2) return;
-                    
-                    // Check for common keywords
-                    const keywords = ['serial', 'id', 'code', 'number', 'key', 'mã', 'số'];
-                    let score = 0;
-                    
-                    keywords.forEach(keyword => {
-                        if (h1Lower.includes(keyword) && h2Lower.includes(keyword)) {
-                            score += 10;
-                        }
-                    });
-                    
-                    // Exact match bonus
-                    if (h1Lower === h2Lower) score += 20;
-                    
-                    // Partial match bonus
-                    if (h1Lower.includes(h2Lower) || h2Lower.includes(h1Lower)) {
-                        score += 5;
-                    }
-                    
-                    if (score > maxScore) {
-                        maxScore = score;
-                        bestMatch1 = h1;
-                        bestMatch2 = h2;
-                    }
-                });
-            });
-            
-            // Auto-select if found
-            if (bestMatch1 && bestMatch2 && maxScore > 0) {
-                document.getElementById('key1').value = bestMatch1;
-                document.getElementById('key2').value = bestMatch2;
-                showResult('excelResult', `✓ Suggested: "${bestMatch1}" ↔ "${bestMatch2}"`, false);
-            }
         }
 
         // Add change listeners for sheet selectors
@@ -944,7 +884,7 @@
             if (sheet1Select) {
                 sheet1Select.addEventListener('change', function() {
                     populateColumnDropdowns();
-                    showSheetPreview(sheet1Select.value);
+                    showSheetPreview(sheet1Select.value, 10);
                 });
             }
             if (sheet2Select) {
@@ -1039,9 +979,10 @@
             const previewTable = document.getElementById('previewTable');
             
             const headers = data[2];
-            const rows = data.slice(3, 8); // First 5 data rows
+            const rows = data.slice(3, 13); // First 10 data rows
             
-            let html = '<table class="preview-table"><thead><tr>';
+            let html = '<h3 style="color: var(--primary); margin-bottom: var(--spacing-4);">Merged Preview (First 10 Rows)</h3>';
+            html += '<table class="preview-table"><thead><tr>';
             headers.forEach(h => {
                 html += `<th>${h || ''}</th>`;
             });
@@ -1061,7 +1002,7 @@
         }
 
         // Show sheet preview after upload
-        function showSheetPreview(sheetName) {
+        function showSheetPreview(sheetName, numRows = 10) {
             const data = sheets[sheetName];
             if (!data || data.length < 4) return;
             
@@ -1069,9 +1010,9 @@
             const previewTable = document.getElementById('previewTable');
             
             const headers = data[2];
-            const rows = data.slice(3, 8); // First 5 data rows
+            const rows = data.slice(3, 3 + numRows); // First N data rows
             
-            let html = '<h3 style="color: var(--primary); margin-bottom: var(--spacing-4);">Sheet Preview: ' + sheetName + '</h3>';
+            let html = '<h3 style="color: var(--primary); margin-bottom: var(--spacing-4);">Sheet Preview: ' + sheetName + ' (First ' + numRows + ' Rows)</h3>';
             html += '<table class="preview-table"><thead><tr>';
             headers.forEach(h => {
                 html += `<th>${h || ''}</th>`;
