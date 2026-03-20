@@ -512,8 +512,8 @@ Hoặc: 2026-03-20 11:15:18 2026-03-20 11:15:19"></textarea>
             result += `${totalDiff.toLocaleString()} ms<br>`;
             result += `${totalDays} ngày (${totalHours} giờ)`;
             
-            document.getElementById(textId).innerHTML = result;
-            document.getElementById(resultId).classList.add('show');
+            document.getElementById('multiText').innerHTML = result;
+            document.getElementById('multiResult').classList.add('show');
         }
 
         // Initialize
