@@ -743,6 +743,9 @@
                         // Auto-detect common fields
                         autoDetectCommonFields();
                         
+                        // Show sheet preview
+                        showSheetPreview(sheet1Name);
+                        
                         document.getElementById('sheetSelector').style.display = 'block';
                         showResult('excelResult', `✓ Loaded ${workbook.SheetNames.length} sheets`, false);
                     };
@@ -818,7 +821,10 @@
             const sheet2Select = document.getElementById('sheet2');
             
             if (sheet1Select) {
-                sheet1Select.addEventListener('change', autoDetectCommonFields);
+                sheet1Select.addEventListener('change', function() {
+                    autoDetectCommonFields();
+                    showSheetPreview(sheet1Select.value);
+                });
             }
             if (sheet2Select) {
                 sheet2Select.addEventListener('change', autoDetectCommonFields);
@@ -922,6 +928,38 @@
             rows.forEach(row => {
                 html += '<tr>';
                 row.forEach(cell => {
+                    html += `<td>${cell !== undefined && cell !== null ? cell : ''}</td>`;
+                });
+                html += '</tr>';
+            });
+            
+            html += '</tbody></table>';
+            previewTable.innerHTML = html;
+            previewSection.style.display = 'block';
+        }
+
+        // Show sheet preview after upload
+        function showSheetPreview(sheetName) {
+            const data = sheets[sheetName];
+            if (!data || data.length < 4) return;
+            
+            const previewSection = document.getElementById('previewSection');
+            const previewTable = document.getElementById('previewTable');
+            
+            const headers = data[2];
+            const rows = data.slice(3, 8); // First 5 data rows
+            
+            let html = '<h3 style="color: var(--primary); margin-bottom: var(--spacing-4);">Sheet Preview: ' + sheetName + '</h3>';
+            html += '<table class="preview-table"><thead><tr>';
+            headers.forEach(h => {
+                html += `<th>${h || ''}</th>`;
+            });
+            html += '</tr></thead><tbody>';
+            
+            rows.forEach(row => {
+                html += '<tr>';
+                headers.forEach((_, idx) => {
+                    const cell = row[idx];
                     html += `<td>${cell !== undefined && cell !== null ? cell : ''}</td>`;
                 });
                 html += '</tr>';
