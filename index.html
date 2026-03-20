@@ -168,6 +168,28 @@
                 </div>
             </div>
 
+            <!-- So sánh nhiều ngày -->
+            <div class="section">
+                <h2>So Sánh Nhiều Ngày</h2>
+                <div id="multiDateInputs">
+                    <div class="input-group">
+                        <label>Ngày 1:</label>
+                        <input type="datetime-local" class="multi-date" step="0.001">
+                    </div>
+                    <div class="input-group">
+                        <label>Ngày 2:</label>
+                        <input type="datetime-local" class="multi-date" step="0.001">
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button onclick="addDateInput()">➕ Thêm Ngày</button>
+                    <button onclick="compareMultiDates()">So Sánh</button>
+                </div>
+                <div class="result" id="multiResult">
+                    <div class="result-text" id="multiText"></div>
+                </div>
+            </div>
+
             <!-- Thêm/Trừ ngày -->
             <div class="section">
                 <h2>Thêm/Trừ Ngày Tháng</h2>
@@ -364,6 +386,77 @@
         document.getElementById('diffEnd').value = nowString;
         document.getElementById('addDate').value = now.toISOString().split('T')[0];
         document.getElementById('infoDate').value = now.toISOString().split('T')[0];
+        
+        // Set default values for multi-date inputs
+        const multiInputs = document.querySelectorAll('.multi-date');
+        multiInputs[0].value = yesterdayString;
+        multiInputs[1].value = nowString;
+
+        // Add date input
+        let dateCounter = 2;
+        function addDateInput() {
+            dateCounter++;
+            const container = document.getElementById('multiDateInputs');
+            const div = document.createElement('div');
+            div.className = 'input-group';
+            div.innerHTML = `
+                <label>Ngày ${dateCounter}:</label>
+                <input type="datetime-local" class="multi-date" step="0.001">
+            `;
+            container.appendChild(div);
+        }
+
+        // Compare multiple dates
+        function compareMultiDates() {
+            const inputs = document.querySelectorAll('.multi-date');
+            const dates = Array.from(inputs)
+                .map(input => input.value)
+                .filter(val => val)
+                .map(val => new Date(val))
+                .sort((a, b) => a - b);
+            
+            if (dates.length < 2) {
+                alert('Vui lòng nhập ít nhất 2 ngày!');
+                return;
+            }
+            
+            let result = '<strong>Danh sách ngày (sắp xếp):</strong><br>';
+            dates.forEach((date, i) => {
+                const formatted = date.toLocaleString('vi-VN', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+                result += `${i + 1}. ${formatted}<br>`;
+            });
+            
+            result += '<br><strong>Khoảng cách giữa các ngày:</strong><br>';
+            for (let i = 0; i < dates.length - 1; i++) {
+                const diff = dates[i + 1] - dates[i];
+                const diffDays = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const diffHours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const diffMins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const diffSecs = Math.floor((diff % (1000 * 60)) / 1000);
+                const diffMs = diff % 1000;
+                
+                result += `Ngày ${i + 1} → Ngày ${i + 2}: `;
+                result += `${diffDays}d ${diffHours}h ${diffMins}m ${diffSecs}s ${diffMs}ms<br>`;
+            }
+            
+            const totalDiff = dates[dates.length - 1] - dates[0];
+            const totalDays = Math.floor(totalDiff / (1000 * 60 * 60 * 24));
+            const totalHours = Math.floor(totalDiff / (1000 * 60 * 60));
+            
+            result += `<br><strong>Tổng khoảng cách (đầu → cuối):</strong><br>`;
+            result += `${totalDiff.toLocaleString()} ms<br>`;
+            result += `${totalDays} ngày (${totalHours} giờ)`;
+            
+            document.getElementById('multiText').innerHTML = result;
+            document.getElementById('multiResult').classList.add('show');
+        }
     </script>
 </body>
 </html>
