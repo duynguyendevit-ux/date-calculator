@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universal Tools - Công Cụ Đa Năng</title>
+    <title>Universal Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -11,216 +14,263 @@
             box-sizing: border-box;
         }
 
+        :root {
+            /* Colors */
+            --background: #fafaf4;
+            --surface: #fafaf4;
+            --surface-container-lowest: #ffffff;
+            --surface-container-low: #f4f4ee;
+            --surface-container: #eeeeea;
+            --surface-variant: #dadad5;
+            --primary: #000000;
+            --primary-container: #1c1b1b;
+            --secondary: #7e5538;
+            --on-surface: #1a1c19;
+            --on-surface-variant: #44474e;
+            --outline-variant: #c4c7c7;
+            
+            /* Typography */
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+            
+            /* Spacing */
+            --spacing-4: 1rem;
+            --spacing-8: 2rem;
+            --spacing-12: 3rem;
+            --spacing-16: 4rem;
+            
+            /* Radius */
+            --radius-default: 0.25rem;
+            --radius-xl: 0.75rem;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: var(--font-sans);
+            background: var(--background);
+            color: var(--on-surface);
+            font-size: 0.875rem;
+            line-height: 1.6;
             min-height: 100vh;
-            padding: 20px;
-        }
-
-        .header {
-            text-align: center;
-            color: white;
-            margin-bottom: 30px;
-        }
-
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .header p {
-            font-size: 1.1em;
-            opacity: 0.9;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
+            padding: var(--spacing-12) var(--spacing-8);
         }
 
+        /* Header */
+        header {
+            margin-bottom: var(--spacing-16);
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            color: var(--primary);
+            margin-bottom: var(--spacing-4);
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: var(--on-surface-variant);
+            font-weight: 400;
+            letter-spacing: 0.01em;
+        }
+
+        /* Navigation Tabs */
         .tabs {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
+            gap: 0;
+            margin-bottom: var(--spacing-12);
+            background: var(--surface-container-low);
+            padding: 0.5rem;
+            border-radius: var(--radius-xl);
         }
 
         .tab {
-            background: rgba(255,255,255,0.2);
-            color: white;
+            background: transparent;
             border: none;
-            padding: 15px 30px;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            font-family: var(--font-sans);
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--on-surface-variant);
             cursor: pointer;
-            transition: all 0.3s;
-            backdrop-filter: blur(10px);
+            transition: all 0.2s ease;
+            border-radius: var(--radius-default);
+            letter-spacing: 0.01em;
         }
 
         .tab:hover {
-            background: rgba(255,255,255,0.3);
-            transform: translateY(-2px);
+            color: var(--on-surface);
+            background: var(--surface-container);
         }
 
         .tab.active {
-            background: white;
-            color: #667eea;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            background: var(--surface-container-lowest);
+            color: var(--primary);
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(26, 28, 25, 0.04);
         }
 
+        /* Tool Content */
         .tool-content {
             display: none;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            padding: 40px;
         }
 
         .tool-content.active {
             display: block;
-            animation: fadeIn 0.3s;
+            animation: fadeIn 0.3s ease;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .tool-title {
-            color: #667eea;
-            margin-bottom: 30px;
-            font-size: 2em;
-            border-bottom: 3px solid #667eea;
-            padding-bottom: 10px;
-        }
-
-        .calculator {
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-        }
-
+        /* Section */
         .section {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            border-left: 4px solid #667eea;
+            background: var(--surface-container-lowest);
+            padding: var(--spacing-8);
+            margin-bottom: var(--spacing-8);
+            border-radius: var(--radius-xl);
         }
 
         .section h2 {
-            color: #333;
-            margin-bottom: 15px;
-            font-size: 1.2em;
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: var(--spacing-8);
+            letter-spacing: -0.01em;
         }
 
+        /* Form Elements */
         .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 15px;
+            margin-bottom: var(--spacing-8);
         }
 
         label {
-            color: #555;
-            font-weight: 500;
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--on-surface-variant);
+            margin-bottom: 0.5rem;
         }
 
-        input[type="date"],
-        input[type="datetime-local"],
-        input[type="number"],
+        input[type="text"],
+        textarea,
         select {
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s;
+            width: 100%;
+            padding: var(--spacing-4);
+            background: var(--surface-container-low);
+            border: none;
+            border-radius: var(--radius-default);
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+            color: var(--on-surface);
+            transition: background 0.2s ease;
         }
 
         input:focus,
+        textarea:focus,
         select:focus {
             outline: none;
-            border-color: #667eea;
+            background: var(--surface-container);
         }
 
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+            font-family: var(--font-mono);
+        }
+
+        /* Buttons */
         button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-container) 100%);
+            color: #ffffff;
             border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 16px;
+            padding: 0.875rem 2rem;
+            border-radius: var(--radius-default);
+            font-family: var(--font-sans);
+            font-size: 0.875rem;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            letter-spacing: 0.01em;
         }
 
         button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
         button:active {
             transform: translateY(0);
         }
 
+        button:disabled {
+            background: var(--surface-variant);
+            color: var(--on-surface-variant);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Result */
         .result {
-            background: #e8f5e9;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
+            background: var(--surface-container-low);
+            padding: var(--spacing-4);
+            border-radius: var(--radius-default);
+            margin-top: var(--spacing-4);
             display: none;
-            border-left: 4px solid #4caf50;
+            font-family: var(--font-mono);
+            font-size: 0.8125rem;
+            line-height: 1.8;
         }
 
         .result.show {
             display: block;
         }
 
-        .result-text {
-            color: #2e7d32;
-            font-size: 16px;
-            line-height: 1.6;
+        .result.error {
+            background: #fff5f5;
+            color: #c53030;
         }
 
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
+        /* Coming Soon */
         .coming-soon {
             text-align: center;
-            padding: 60px 20px;
-            color: #999;
+            padding: var(--spacing-16) var(--spacing-8);
+            color: var(--on-surface-variant);
         }
 
         .coming-soon h3 {
-            font-size: 2em;
-            margin-bottom: 20px;
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: var(--spacing-4);
         }
 
-        .coming-soon p {
-            font-size: 1.2em;
-        }
-
+        /* Responsive */
         @media (max-width: 768px) {
-            .header h1 {
-                font-size: 1.8em;
+            h1 {
+                font-size: 2.5rem;
             }
 
-            .tool-content {
-                padding: 20px;
+            .container {
+                padding: var(--spacing-8) var(--spacing-4);
             }
 
-            .grid {
-                grid-template-columns: 1fr;
+            .section {
+                padding: var(--spacing-4);
             }
 
             .tabs {
-                justify-content: center;
+                flex-wrap: wrap;
             }
 
             .tab {
@@ -228,70 +278,65 @@
                 min-width: 120px;
             }
         }
+
+        /* Accent for human moments */
+        .note {
+            color: var(--secondary);
+            font-size: 0.8125rem;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>🛠️ Universal Tools</h1>
-        <p>Bộ công cụ đa năng - Tất cả trong một</p>
-    </div>
-
     <div class="container">
-        <div class="tabs">
-            <button class="tab active" onclick="switchTab('date')">📅 Date Calculator</button>
-            <button class="tab" onclick="switchTab('excel')">📊 Excel Merge</button>
-            <button class="tab" onclick="switchTab('text')">📝 Text Tools</button>
-            <button class="tab" onclick="switchTab('number')">🔢 Number Tools</button>
-            <button class="tab" onclick="switchTab('converter')">🔄 Converter</button>
-        </div>
+        <header>
+            <h1>Universal Tools</h1>
+            <p class="subtitle">Precision instruments for everyday tasks</p>
+        </header>
 
-        <!-- Date Calculator Tool -->
+        <nav class="tabs">
+            <button class="tab active" onclick="switchTab('date')">Date Calculator</button>
+            <button class="tab" onclick="switchTab('excel')">Excel Merge</button>
+            <button class="tab" onclick="switchTab('text')">Text Tools</button>
+            <button class="tab" onclick="switchTab('converter')">Converter</button>
+        </nav>
+
+        <!-- Date Calculator -->
         <div id="date" class="tool-content active">
-            <h1 class="tool-title">📅 Date Calculator</h1>
-            <div class="calculator">
-                <!-- Include all date calculator sections here -->
-                <div class="section">
-                    <h2>Tính Khoảng Cách Giữa 2 Ngày</h2>
-                    <div class="input-group">
-                        <label>Ngày bắt đầu:</label>
-                        <input type="text" id="diffStart" placeholder="2026-03-20 11:15:18">
-                    </div>
-                    <div class="input-group">
-                        <label>Ngày kết thúc:</label>
-                        <input type="text" id="diffEnd" placeholder="2026-03-20 11:15:19">
-                    </div>
-                    <button onclick="calculateDiff()">Tính Khoảng Cách</button>
-                    <div class="result" id="diffResult">
-                        <div class="result-text" id="diffText"></div>
-                    </div>
+            <div class="section">
+                <h2>Calculate Date Difference</h2>
+                <div class="input-group">
+                    <label>Start Date</label>
+                    <input type="text" id="diffStart" placeholder="2026-03-20 11:15:18">
                 </div>
-
-                <div class="section">
-                    <h2>So Sánh Nhiều Ngày</h2>
-                    <div class="input-group">
-                        <label>Nhập danh sách ngày (mỗi ngày 1 dòng hoặc cách nhau bởi khoảng trắng):</label>
-                        <textarea id="textDateInput" rows="6" style="padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px; font-family: monospace; resize: vertical;" placeholder="Ví dụ:
-2026-03-20 11:15:18
-2026-03-20 11:15:18
-2026-03-20 11:15:19
-2026-03-20 11:15:19
-
-Hoặc: 2026-03-20 11:15:18 2026-03-20 11:15:19"></textarea>
-                    </div>
-                    <button onclick="parseTextDates()">Phân Tích & So Sánh</button>
-                    <div class="result" id="textResult">
-                        <div class="result-text" id="textText"></div>
-                    </div>
+                <div class="input-group">
+                    <label>End Date</label>
+                    <input type="text" id="diffEnd" placeholder="2026-03-20 11:15:19">
                 </div>
+                <button onclick="calculateDiff()">Calculate</button>
+                <div class="result" id="diffResult"></div>
+            </div>
+
+            <div class="section">
+                <h2>Compare Multiple Dates</h2>
+                <div class="input-group">
+                    <label>Date List</label>
+                    <textarea id="textDateInput" placeholder="2026-03-20 11:15:18
+2026-03-20 11:15:19
+2026-03-20 11:15:20"></textarea>
+                    <p class="note">One date per line, or space-separated</p>
+                </div>
+                <button onclick="parseTextDates()">Analyze</button>
+                <div class="result" id="textResult"></div>
             </div>
         </div>
 
-        <!-- Excel Merge Tool -->
+        <!-- Excel Merge -->
         <div id="excel" class="tool-content">
-            <h1 class="tool-title">📊 Excel Merge Tool</h1>
             <div class="coming-soon">
-                <h3>🔄 Redirecting...</h3>
-                <p>Đang chuyển đến Excel Merge Tool...</p>
+                <h3>Excel Merge</h3>
+                <p>Redirecting to standalone tool...</p>
             </div>
             <script>
                 if (document.getElementById('excel').classList.contains('active')) {
@@ -300,30 +345,19 @@ Hoặc: 2026-03-20 11:15:18 2026-03-20 11:15:19"></textarea>
             </script>
         </div>
 
-        <!-- Text Tools (Coming Soon) -->
+        <!-- Text Tools -->
         <div id="text" class="tool-content">
-            <h1 class="tool-title">📝 Text Tools</h1>
             <div class="coming-soon">
-                <h3>🚧 Coming Soon</h3>
-                <p>Text manipulation tools đang được phát triển...</p>
+                <h3>Text Tools</h3>
+                <p>Coming soon</p>
             </div>
         </div>
 
-        <!-- Number Tools (Coming Soon) -->
-        <div id="number" class="tool-content">
-            <h1 class="tool-title">🔢 Number Tools</h1>
-            <div class="coming-soon">
-                <h3>🚧 Coming Soon</h3>
-                <p>Number calculation tools đang được phát triển...</p>
-            </div>
-        </div>
-
-        <!-- Converter (Coming Soon) -->
+        <!-- Converter -->
         <div id="converter" class="tool-content">
-            <h1 class="tool-title">🔄 Converter</h1>
             <div class="coming-soon">
-                <h3>🚧 Coming Soon</h3>
-                <p>Unit converter tools đang được phát triển...</p>
+                <h3>Converter</h3>
+                <p>Coming soon</p>
             </div>
         </div>
     </div>
@@ -331,194 +365,119 @@ Hoặc: 2026-03-20 11:15:18 2026-03-20 11:15:19"></textarea>
     <script>
         // Tab switching
         function switchTab(tabName) {
-            // Hide all contents
             document.querySelectorAll('.tool-content').forEach(content => {
                 content.classList.remove('active');
             });
-            
-            // Remove active from all tabs
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.classList.remove('active');
             });
-            
-            // Show selected content
             document.getElementById(tabName).classList.add('active');
-            
-            // Activate selected tab
             event.target.classList.add('active');
         }
 
-        // Date Calculator Functions
+        // Date parsing
         function parseDate(input) {
             if (!input) return null;
-            
-            // Try ISO formats
             if (/\d{4}-\d{2}-\d{2}/.test(input)) {
                 return new Date(input.replace(' ', 'T'));
-            }
-            // Try timestamp milliseconds
-            else if (/^\d{13}$/.test(input)) {
+            } else if (/^\d{13}$/.test(input)) {
                 return new Date(parseInt(input));
-            }
-            // Try timestamp seconds
-            else if (/^\d{10}$/.test(input)) {
+            } else if (/^\d{10}$/.test(input)) {
                 return new Date(parseInt(input) * 1000);
             }
-            
             return null;
         }
 
+        // Calculate difference
         function calculateDiff() {
-            const startInput = document.getElementById('diffStart').value.trim();
-            const endInput = document.getElementById('diffEnd').value.trim();
-            
-            const start = parseDate(startInput);
-            const end = parseDate(endInput);
+            const start = parseDate(document.getElementById('diffStart').value.trim());
+            const end = parseDate(document.getElementById('diffEnd').value.trim());
             
             if (!start || !end || isNaN(start.getTime()) || isNaN(end.getTime())) {
-                alert('Vui lòng nhập ngày hợp lệ!\n\nFormat hỗ trợ:\n- 2026-03-20 11:15:18\n- 2026-03-20\n- 1710912918000 (timestamp ms)\n- 1710912918 (timestamp s)');
+                showResult('diffResult', 'Invalid date format', true);
                 return;
             }
-            
+
             const diffMs = Math.abs(end - start);
             const diffSeconds = Math.floor(diffMs / 1000);
             const diffMinutes = Math.floor(diffSeconds / 60);
             const diffHours = Math.floor(diffMinutes / 60);
             const diffDays = Math.floor(diffHours / 24);
-            const diffWeeks = Math.floor(diffDays / 7);
-            const diffMonths = Math.floor(diffDays / 30.44);
-            const diffYears = Math.floor(diffDays / 365.25);
-            
+
             const ms = diffMs % 1000;
             const sec = diffSeconds % 60;
             const min = diffMinutes % 60;
             const hrs = diffHours % 24;
-            
-            let result = `
-                <strong>Tổng:</strong><br>
-                • ${diffMs.toLocaleString()} milliseconds<br>
-                • ${diffSeconds.toLocaleString()} giây<br>
-                • ${diffMinutes.toLocaleString()} phút<br>
-                • ${diffHours.toLocaleString()} giờ<br>
-                • ${diffDays.toLocaleString()} ngày<br>
-            `;
-            
-            if (diffWeeks > 0) result += `• ${diffWeeks} tuần<br>`;
-            if (diffMonths > 0) result += `• ${diffMonths} tháng<br>`;
-            if (diffYears > 0) result += `• ${diffYears} năm<br>`;
-            
-            result += `<br><strong>Chi tiết:</strong><br>`;
-            result += `${diffDays} ngày, ${hrs} giờ, ${min} phút, ${sec} giây, ${ms} ms`;
-            
-            document.getElementById('diffText').innerHTML = result;
-            document.getElementById('diffResult').classList.add('show');
+
+            let result = `Total:\n`;
+            result += `${diffMs.toLocaleString()} milliseconds\n`;
+            result += `${diffSeconds.toLocaleString()} seconds\n`;
+            result += `${diffMinutes.toLocaleString()} minutes\n`;
+            result += `${diffHours.toLocaleString()} hours\n`;
+            result += `${diffDays.toLocaleString()} days\n\n`;
+            result += `Breakdown:\n${diffDays}d ${hrs}h ${min}m ${sec}s ${ms}ms`;
+
+            showResult('diffResult', result, false);
         }
 
+        // Parse text dates
         function parseTextDates() {
             const text = document.getElementById('textDateInput').value.trim();
             if (!text) {
-                alert('Vui lòng nhập danh sách ngày!');
+                showResult('textResult', 'Please enter dates', true);
                 return;
             }
-            
-            // Split by newlines first
-            let lines = text.split('\n').filter(line => line.trim());
-            
-            // If only one line, try to extract datetime patterns
-            if (lines.length === 1) {
-                const line = lines[0];
-                // Match datetime patterns: YYYY-MM-DD HH:MM:SS
-                const datePattern = /\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}/g;
-                const matches = line.match(datePattern);
-                if (matches) {
-                    lines = matches;
-                } else {
-                    // Try date only: YYYY-MM-DD
-                    const dateOnlyPattern = /\d{4}-\d{2}-\d{2}/g;
-                    const dateMatches = line.match(dateOnlyPattern);
-                    if (dateMatches) {
-                        lines = dateMatches;
-                    }
-                }
-            }
-            
-            // Parse dates
-            const dates = [];
-            
-            lines.forEach(line => {
-                let parsed = null;
-                
-                // Try ISO formats
-                if (/\d{4}-\d{2}-\d{2}/.test(line)) {
-                    parsed = new Date(line.replace(' ', 'T'));
-                }
-                // Try timestamp milliseconds
-                else if (/^\d{13}$/.test(line)) {
-                    parsed = new Date(parseInt(line));
-                }
-                // Try timestamp seconds
-                else if (/^\d{10}$/.test(line)) {
-                    parsed = new Date(parseInt(line) * 1000);
-                }
-                
-                if (parsed && !isNaN(parsed.getTime())) {
-                    dates.push(parsed);
-                }
-            });
-            
-            if (dates.length < 2) {
-                alert('Không tìm thấy đủ ngày hợp lệ! Vui lòng kiểm tra format.\n\nFormat hỗ trợ:\n- 2026-03-20 11:15:18\n- 2026-03-20\n- 1710912918000 (timestamp ms)\n- 1710912918 (timestamp s)');
-                return;
-            }
-            
-            dates.sort((a, b) => a - b);
-            displayDateComparison(dates, 'textText', 'textResult');
-        }
 
-        function displayDateComparison(dates, textId, resultId) {
-            let result = '<strong>Danh sách ngày (sắp xếp):</strong><br>';
+            let lines = text.split('\n').filter(line => line.trim());
+            if (lines.length === 1) {
+                const datePattern = /\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}/g;
+                const matches = lines[0].match(datePattern);
+                if (matches) lines = matches;
+            }
+
+            const dates = lines.map(line => parseDate(line)).filter(d => d && !isNaN(d.getTime())).sort((a, b) => a - b);
+
+            if (dates.length < 2) {
+                showResult('textResult', 'Need at least 2 valid dates', true);
+                return;
+            }
+
+            let result = 'Sorted dates:\n';
             dates.forEach((date, i) => {
-                const formatted = date.toLocaleString('vi-VN', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit'
-                });
-                result += `${i + 1}. ${formatted}<br>`;
+                result += `${i + 1}. ${date.toLocaleString('vi-VN')}\n`;
             });
-            
-            result += '<br><strong>Khoảng cách giữa các ngày:</strong><br>';
+
+            result += '\nIntervals:\n';
             for (let i = 0; i < dates.length - 1; i++) {
                 const diff = dates[i + 1] - dates[i];
-                const diffDays = Math.floor(diff / (1000 * 60 * 60 * 24));
-                const diffHours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const diffMins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                const diffSecs = Math.floor((diff % (1000 * 60)) / 1000);
-                const diffMs = diff % 1000;
-                
-                result += `Ngày ${i + 1} → Ngày ${i + 2}: `;
-                result += `${diffDays}d ${diffHours}h ${diffMins}m ${diffSecs}s ${diffMs}ms<br>`;
+                const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const s = Math.floor((diff % (1000 * 60)) / 1000);
+                const ms = diff % 1000;
+                result += `${i + 1} → ${i + 2}: ${d}d ${h}h ${m}m ${s}s ${ms}ms\n`;
             }
-            
+
             const totalDiff = dates[dates.length - 1] - dates[0];
-            const totalDays = Math.floor(totalDiff / (1000 * 60 * 60 * 24));
-            const totalHours = Math.floor(totalDiff / (1000 * 60 * 60));
-            
-            result += `<br><strong>Tổng khoảng cách (đầu → cuối):</strong><br>`;
-            result += `${totalDiff.toLocaleString()} ms<br>`;
-            result += `${totalDays} ngày (${totalHours} giờ)`;
-            
-            document.getElementById(textId).innerHTML = result;
-            document.getElementById(resultId).classList.add('show');
+            result += `\nTotal span: ${totalDiff.toLocaleString()} ms`;
+
+            showResult('textResult', result, false);
+        }
+
+        function showResult(id, message, isError) {
+            const result = document.getElementById(id);
+            result.textContent = message;
+            result.classList.add('show');
+            if (isError) {
+                result.classList.add('error');
+            } else {
+                result.classList.remove('error');
+            }
         }
 
         // Initialize
         const now = new Date();
         const yesterday = new Date(now - 24*60*60*1000);
-        
-        // Format: YYYY-MM-DD HH:MM:SS
         const formatDateTime = (date) => {
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -528,7 +487,6 @@ Hoặc: 2026-03-20 11:15:18 2026-03-20 11:15:19"></textarea>
             const seconds = String(date.getSeconds()).padStart(2, '0');
             return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
         };
-        
         document.getElementById('diffStart').value = formatDateTime(yesterday);
         document.getElementById('diffEnd').value = formatDateTime(now);
     </script>
