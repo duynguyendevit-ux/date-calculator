@@ -743,7 +743,28 @@
             });
             document.getElementById(tabName).classList.add('active');
             event.target.classList.add('active');
+            
+            // Save to localStorage
+            localStorage.setItem('activeTab', tabName);
         }
+
+        // Load saved tab on page load
+        (function() {
+            const savedTab = localStorage.getItem('activeTab');
+            if (savedTab && document.getElementById(savedTab)) {
+                // Remove default active
+                document.querySelectorAll('.tool-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.querySelectorAll('.tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                
+                // Set saved tab as active
+                document.getElementById(savedTab).classList.add('active');
+                document.querySelector(`[onclick="switchTab('${savedTab}')"]`).classList.add('active');
+            }
+        })();
 
         // Excel file upload
         document.addEventListener('DOMContentLoaded', function() {
