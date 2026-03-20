@@ -829,11 +829,14 @@
                             sheet2.innerHTML += `<option value="${name}">${name}</option>`;
                         });
                         
+                        // Get first sheet name
+                        const firstSheet = workbook.SheetNames[0];
+                        
                         // Populate column dropdowns
                         populateColumnDropdowns();
                         
                         // Show sheet preview (10 rows)
-                        showSheetPreview(sheet1Name, 10);
+                        showSheetPreview(firstSheet, 10);
                         
                         document.getElementById('sheetSelector').style.display = 'block';
                         showResult('excelResult', `✓ Loaded ${workbook.SheetNames.length} sheets`, false);
