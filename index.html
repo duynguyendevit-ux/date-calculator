@@ -351,6 +351,11 @@
             <div class="section">
                 <h2>Compare Multiple Dates</h2>
                 <div class="input-group">
+                    <label>Reference Date (Optional)</label>
+                    <input type="text" id="referenceDate" placeholder="2026-03-20 11:15:00">
+                    <p class="note">Leave empty to compare all dates with each other</p>
+                </div>
+                <div class="input-group">
                     <label>Date List</label>
                     <textarea id="textDateInput" placeholder="2026-03-20 11:15:18
 2026-03-20 11:15:19
@@ -629,6 +634,8 @@
         // Parse text dates
         function parseTextDates() {
             const text = document.getElementById('textDateInput').value.trim();
+            const refDateInput = document.getElementById('referenceDate').value.trim();
+            
             if (!text) {
                 showResult('textResult', 'Please enter dates', true);
                 return;
@@ -643,29 +650,57 @@
 
             const dates = lines.map(line => parseDate(line)).filter(d => d && !isNaN(d.getTime())).sort((a, b) => a - b);
 
-            if (dates.length < 2) {
-                showResult('textResult', 'Need at least 2 valid dates', true);
+            if (dates.length < 1) {
+                showResult('textResult', 'Need at least 1 valid date', true);
                 return;
             }
 
-            let result = 'Sorted dates:\n';
-            dates.forEach((date, i) => {
-                result += `${i + 1}. ${date.toLocaleString('vi-VN')}\n`;
-            });
+            let result = '';
+            
+            // Reference date mode
+            if (refDateInput) {
+                const refDate = parseDate(refDateInput);
+                if (!refDate || isNaN(refDate.getTime())) {
+                    showResult('textResult', 'Invalid reference date', true);
+                    return;
+                }
+                
+                result = `Reference: ${refDate.toLocaleString('vi-VN')}\n\n`;
+                result += 'Differences from reference:\n';
+                
+                dates.forEach((date, i) => {
+                    const diff = Math.abs(date - refDate);
+                    const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+                    const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    const s = Math.floor((diff % (1000 * 60)) / 1000);
+                    const ms = diff % 1000;
+                    const sign = date > refDate ? '+' : '-';
+                    result += `${i + 1}. ${date.toLocaleString('vi-VN')}\n   ${sign}${d}d ${h}h ${m}m ${s}s ${ms}ms (${diff.toLocaleString()} ms)\n`;
+                });
+            } else {
+                // Normal mode - compare all dates
+                result = 'Sorted dates:\n';
+                dates.forEach((date, i) => {
+                    result += `${i + 1}. ${date.toLocaleString('vi-VN')}\n`;
+                });
 
-            result += '\nIntervals:\n';
-            for (let i = 0; i < dates.length - 1; i++) {
-                const diff = dates[i + 1] - dates[i];
-                const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-                const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                const s = Math.floor((diff % (1000 * 60)) / 1000);
-                const ms = diff % 1000;
-                result += `${i + 1} → ${i + 2}: ${d}d ${h}h ${m}m ${s}s ${ms}ms\n`;
+                if (dates.length >= 2) {
+                    result += '\nIntervals:\n';
+                    for (let i = 0; i < dates.length - 1; i++) {
+                        const diff = dates[i + 1] - dates[i];
+                        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+                        const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                        const s = Math.floor((diff % (1000 * 60)) / 1000);
+                        const ms = diff % 1000;
+                        result += `${i + 1} → ${i + 2}: ${d}d ${h}h ${m}m ${s}s ${ms}ms\n`;
+                    }
+
+                    const totalDiff = dates[dates.length - 1] - dates[0];
+                    result += `\nTotal span: ${totalDiff.toLocaleString()} ms`;
+                }
             }
-
-            const totalDiff = dates[dates.length - 1] - dates[0];
-            result += `\nTotal span: ${totalDiff.toLocaleString()} ms`;
 
             showResult('textResult', result, false);
         }
