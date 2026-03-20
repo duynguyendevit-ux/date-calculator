@@ -409,6 +409,16 @@
             border-collapse: collapse;
             font-size: 0.75rem;
             font-family: var(--font-mono);
+            display: block;
+            overflow-x: auto;
+        }
+
+        .preview-table thead,
+        .preview-table tbody,
+        .preview-table tr {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
         }
 
         .preview-table th {
@@ -418,16 +428,40 @@
             font-weight: 600;
             color: var(--on-surface);
             white-space: nowrap;
+            min-width: 100px;
         }
 
         .preview-table td {
             padding: 0.5rem;
             border-bottom: 1px solid var(--surface-container);
             color: var(--on-surface-variant);
+            min-width: 100px;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .preview-table tr:hover {
             background: var(--surface-container-low);
+        }
+
+        @media (max-width: 768px) {
+            .preview-table {
+                font-size: 0.6875rem;
+            }
+
+            .preview-table th,
+            .preview-table td {
+                padding: 0.375rem;
+                min-width: 80px;
+            }
+
+            #previewSection {
+                margin-top: var(--spacing-4);
+            }
+
+            #previewSection h3 {
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
