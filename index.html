@@ -103,6 +103,28 @@
             background: var(--surface-container);
         }
 
+        .header-controls {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .lang-toggle {
+            background: var(--surface-container-low);
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-default);
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            color: var(--on-surface);
+        }
+
+        .lang-toggle:hover {
+            background: var(--surface-container);
+        }
+
         h1 {
             font-size: 3.5rem;
             font-weight: 700;
@@ -386,52 +408,57 @@
     <div class="container">
         <header>
             <div class="header-content">
-                <h1>Universal Tools</h1>
-                <p class="subtitle">Precision instruments for everyday tasks</p>
+                <h1 data-i18n="title">Universal Tools</h1>
+                <p class="subtitle" data-i18n="subtitle">Precision instruments for everyday tasks</p>
             </div>
-            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
-                <span id="themeIcon">🌙</span>
-            </button>
+            <div class="header-controls">
+                <button class="lang-toggle" onclick="toggleLanguage()" aria-label="Toggle language">
+                    <span id="langIcon">EN</span>
+                </button>
+                <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                    <span id="themeIcon">🌙</span>
+                </button>
+            </div>
         </header>
 
         <nav class="tabs">
-            <button class="tab active" onclick="switchTab('date')">Date Calculator</button>
-            <button class="tab" onclick="switchTab('excel')">Excel Merge</button>
-            <button class="tab" onclick="switchTab('text')">Text Tools</button>
-            <button class="tab" onclick="switchTab('converter')">Converter</button>
+            <button class="tab active" onclick="switchTab('date')" data-i18n="dateCalc">Date Calculator</button>
+            <button class="tab" onclick="switchTab('excel')" data-i18n="excelMerge">Excel Merge</button>
+            <button class="tab" onclick="switchTab('text')" data-i18n="textTools">Text Tools</button>
+            <button class="tab" onclick="switchTab('converter')" data-i18n="converter">Converter</button>
         </nav>
 
         <!-- Date Calculator -->
         <div id="date" class="tool-content active">
             <div class="section">
-                <h2>Compare Multiple Dates</h2>
+                <h2 data-i18n="compareMultiple">Compare Multiple Dates</h2>
                 <div class="input-group">
-                    <label>Reference Date (Optional)</label>
+                    <label data-i18n="referenceDate">Reference Date (Optional)</label>
                     <input type="text" id="referenceDate" placeholder="2026-03-20 11:15:00">
-                    <p class="note">Leave empty to compare all dates with each other</p>
+                    <p class="note" data-i18n="referenceNote">Leave empty to compare all dates with each other</p>
                 </div>
                 <div class="input-group">
-                    <label>Date List</label>
+                    <label data-i18n="dateList">Date List</label>
                     <textarea id="textDateInput" placeholder="2026-03-20 11:15:18
 2026-03-20 11:15:19
 2026-03-20 11:15:20"></textarea>
-                    <p class="note">One date per line, or space-separated</p>
+                    <p class="note" data-i18n="dateListNote">One date per line, or space-separated</p>
                 </div>
-                <button onclick="parseTextDates()">Analyze</button>
+                <button onclick="parseTextDates()" data-i18n="analyze">Analyze</button>
                 <div class="result" id="textResult"></div>
             </div>
 
             <div class="section">
-                <h2>Calculate Date Difference</h2>
+                <h2 data-i18n="calcDiff">Calculate Date Difference</h2>
                 <div class="input-group">
-                    <label>Start Date</label>
+                    <label data-i18n="startDate">Start Date</label>
                     <input type="text" id="diffStart" placeholder="2026-03-20 11:15:18">
                 </div>
                 <div class="input-group">
-                    <label>End Date</label>
+                    <label data-i18n="endDate">End Date</label>
                     <input type="text" id="diffEnd" placeholder="2026-03-20 11:15:19">
                 </div>
-                <button onclick="calculateDiff()">Calculate</button>
+                <button onclick="calculateDiff()" data-i18n="calculate">Calculate</button>
                 <div class="result" id="diffResult"></div>
             </div>
         </div>
@@ -517,6 +544,103 @@
     </div>
 
     <script>
+        // i18n translations
+        const translations = {
+            en: {
+                title: "Universal Tools",
+                subtitle: "Precision instruments for everyday tasks",
+                dateCalc: "Date Calculator",
+                excelMerge: "Excel Merge",
+                textTools: "Text Tools",
+                converter: "Converter",
+                compareMultiple: "Compare Multiple Dates",
+                referenceDate: "Reference Date (Optional)",
+                referenceNote: "Leave empty to compare all dates with each other",
+                dateList: "Date List",
+                dateListNote: "One date per line, or space-separated",
+                analyze: "Analyze",
+                calcDiff: "Calculate Date Difference",
+                startDate: "Start Date",
+                endDate: "End Date",
+                calculate: "Calculate",
+                jsonFormatter: "JSON Formatter",
+                inputJson: "Input JSON",
+                format: "Format",
+                minify: "Minify",
+                validate: "Validate",
+                textDiff: "Text Diff Comparison",
+                textA: "Text A (Original)",
+                textB: "Text B (Modified)",
+                compare: "Compare",
+                uploadExcel: "Upload Excel File",
+                sheet1: "Sheet 1",
+                keyCol1: "Key Column in Sheet 1",
+                sheet2: "Sheet 2",
+                keyCol2: "Key Column in Sheet 2",
+                mergeType: "Merge Type",
+                merge: "Merge"
+            },
+            vi: {
+                title: "Công Cụ Đa Năng",
+                subtitle: "Công cụ chính xác cho công việc hàng ngày",
+                dateCalc: "Tính Toán Ngày",
+                excelMerge: "Gộp Excel",
+                textTools: "Công Cụ Text",
+                converter: "Chuyển Đổi",
+                compareMultiple: "So Sánh Nhiều Ngày",
+                referenceDate: "Ngày Tham Chiếu (Tùy Chọn)",
+                referenceNote: "Để trống để so sánh tất cả ngày với nhau",
+                dateList: "Danh Sách Ngày",
+                dateListNote: "Mỗi ngày một dòng, hoặc cách nhau bằng khoảng trắng",
+                analyze: "Phân Tích",
+                calcDiff: "Tính Khoảng Cách Ngày",
+                startDate: "Ngày Bắt Đầu",
+                endDate: "Ngày Kết Thúc",
+                calculate: "Tính Toán",
+                jsonFormatter: "Định Dạng JSON",
+                inputJson: "Nhập JSON",
+                format: "Định Dạng",
+                minify: "Nén",
+                validate: "Kiểm Tra",
+                textDiff: "So Sánh Text",
+                textA: "Text A (Gốc)",
+                textB: "Text B (Đã Sửa)",
+                compare: "So Sánh",
+                uploadExcel: "Tải File Excel",
+                sheet1: "Sheet 1",
+                keyCol1: "Cột Khóa Trong Sheet 1",
+                sheet2: "Sheet 2",
+                keyCol2: "Cột Khóa Trong Sheet 2",
+                mergeType: "Loại Gộp",
+                merge: "Gộp"
+            }
+        };
+
+        let currentLang = localStorage.getItem('lang') || 'en';
+
+        // Language toggle
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'vi' : 'en';
+            localStorage.setItem('lang', currentLang);
+            document.getElementById('langIcon').textContent = currentLang.toUpperCase();
+            applyTranslations();
+        }
+
+        function applyTranslations() {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[currentLang][key]) {
+                    el.textContent = translations[currentLang][key];
+                }
+            });
+        }
+
+        // Load saved language
+        (function() {
+            document.getElementById('langIcon').textContent = currentLang.toUpperCase();
+            applyTranslations();
+        })();
+
         // Theme toggle
         function toggleTheme() {
             const html = document.documentElement;
