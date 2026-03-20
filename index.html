@@ -968,6 +968,30 @@
             }
         }
 
+        // Auto-validate JSON on input
+        document.addEventListener('DOMContentLoaded', function() {
+            const jsonInput = document.getElementById('jsonInput');
+            if (jsonInput) {
+                let timeout;
+                jsonInput.addEventListener('input', function() {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => {
+                        const value = jsonInput.value.trim();
+                        if (value) {
+                            try {
+                                JSON.parse(value);
+                                jsonInput.style.borderLeft = '3px solid #16a34a';
+                            } catch (error) {
+                                jsonInput.style.borderLeft = '3px solid #dc2626';
+                            }
+                        } else {
+                            jsonInput.style.borderLeft = 'none';
+                        }
+                    }, 300);
+                });
+            }
+        });
+
         // Text Diff Comparison
         function compareText() {
             const textA = document.getElementById('textA').value;
