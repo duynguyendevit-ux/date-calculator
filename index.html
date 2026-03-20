@@ -253,11 +253,11 @@
                     <h2>Tính Khoảng Cách Giữa 2 Ngày</h2>
                     <div class="input-group">
                         <label>Ngày bắt đầu:</label>
-                        <input type="datetime-local" id="diffStart" step="0.001">
+                        <input type="text" id="diffStart" placeholder="2026-03-20 11:15:18">
                     </div>
                     <div class="input-group">
                         <label>Ngày kết thúc:</label>
-                        <input type="datetime-local" id="diffEnd" step="0.001">
+                        <input type="text" id="diffEnd" placeholder="2026-03-20 11:15:19">
                     </div>
                     <button onclick="calculateDiff()">Tính Khoảng Cách</button>
                     <div class="result" id="diffResult">
@@ -266,7 +266,7 @@
                 </div>
 
                 <div class="section">
-                    <h2>So Sánh Nhiều Ngày (Text Input)</h2>
+                    <h2>So Sánh Nhiều Ngày</h2>
                     <div class="input-group">
                         <label>Nhập danh sách ngày (mỗi ngày 1 dòng hoặc cách nhau bởi khoảng trắng):</label>
                         <textarea id="textDateInput" rows="6" style="padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px; font-family: monospace; resize: vertical;" placeholder="Ví dụ:
@@ -280,27 +280,6 @@ Hoặc: 2026-03-20 11:15:18 2026-03-20 11:15:19"></textarea>
                     <button onclick="parseTextDates()">Phân Tích & So Sánh</button>
                     <div class="result" id="textResult">
                         <div class="result-text" id="textText"></div>
-                    </div>
-                </div>
-
-                <div class="section">
-                    <h2>So Sánh Nhiều Ngày (Manual Input)</h2>
-                    <div id="multiDateInputs">
-                        <div class="input-group">
-                            <label>Ngày 1:</label>
-                            <input type="datetime-local" class="multi-date" step="0.001">
-                        </div>
-                        <div class="input-group">
-                            <label>Ngày 2:</label>
-                            <input type="datetime-local" class="multi-date" step="0.001">
-                        </div>
-                    </div>
-                    <div style="display: flex; gap: 10px; margin-top: 10px;">
-                        <button onclick="addDateInput()">➕ Thêm Ngày</button>
-                        <button onclick="compareMultiDates()">So Sánh</button>
-                    </div>
-                    <div class="result" id="multiResult">
-                        <div class="result-text" id="multiText"></div>
                     </div>
                 </div>
             </div>
@@ -355,9 +334,36 @@ Hoặc: 2026-03-20 11:15:18 2026-03-20 11:15:19"></textarea>
         }
 
         // Date Calculator Functions
+        function parseDate(input) {
+            if (!input) return null;
+            
+            // Try ISO formats
+            if (/\d{4}-\d{2}-\d{2}/.test(input)) {
+                return new Date(input.replace(' ', 'T'));
+            }
+            // Try timestamp milliseconds
+            else if (/^\d{13}$/.test(input)) {
+                return new Date(parseInt(input));
+            }
+            // Try timestamp seconds
+            else if (/^\d{10}$/.test(input)) {
+                return new Date(parseInt(input) * 1000);
+            }
+            
+            return null;
+        }
+
         function calculateDiff() {
-            const start = new Date(document.getElementById('diffStart').value);
-            const end = new Date(document.getElementById('diffEnd').value);
+            const startInput = document.getElementById('diffStart').value.trim();
+            const endInput = document.getElementById('diffEnd').value.trim();
+            
+            const start = parseDate(startInput);
+            const end = parseDate(endInput);
+            
+            if (!start || !end || isNaN(start.getTime()) || isNaN(end.getTime())) {
+                alert('Vui lòng nhập ngày hợp lệ!\n\nFormat hỗ trợ:\n- 2026-03-20 11:15:18\n- 2026-03-20\n- 1710912918000 (timestamp ms)\n- 1710912918 (timestamp s)');
+                return;
+            }
             
             const diffMs = Math.abs(end - start);
             const diffSeconds = Math.floor(diffMs / 1000);
@@ -391,35 +397,6 @@ Hoặc: 2026-03-20 11:15:18 2026-03-20 11:15:19"></textarea>
             
             document.getElementById('diffText').innerHTML = result;
             document.getElementById('diffResult').classList.add('show');
-        }
-
-        let dateCounter = 2;
-        function addDateInput() {
-            dateCounter++;
-            const container = document.getElementById('multiDateInputs');
-            const div = document.createElement('div');
-            div.className = 'input-group';
-            div.innerHTML = `
-                <label>Ngày ${dateCounter}:</label>
-                <input type="datetime-local" class="multi-date" step="0.001">
-            `;
-            container.appendChild(div);
-        }
-
-        function compareMultiDates() {
-            const inputs = document.querySelectorAll('.multi-date');
-            const dates = Array.from(inputs)
-                .map(input => input.value)
-                .filter(val => val)
-                .map(val => new Date(val))
-                .sort((a, b) => a - b);
-            
-            if (dates.length < 2) {
-                alert('Vui lòng nhập ít nhất 2 ngày!');
-                return;
-            }
-            
-            displayDateComparison(dates, 'multiText', 'multiResult');
         }
 
         function parseTextDates() {
@@ -518,16 +495,21 @@ Hoặc: 2026-03-20 11:15:18 2026-03-20 11:15:19"></textarea>
 
         // Initialize
         const now = new Date();
-        const nowString = now.toISOString().slice(0, 23);
         const yesterday = new Date(now - 24*60*60*1000);
-        const yesterdayString = yesterday.toISOString().slice(0, 23);
         
-        document.getElementById('diffStart').value = yesterdayString;
-        document.getElementById('diffEnd').value = nowString;
+        // Format: YYYY-MM-DD HH:MM:SS
+        const formatDateTime = (date) => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            const seconds = String(date.getSeconds()).padStart(2, '0');
+            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        };
         
-        const multiInputs = document.querySelectorAll('.multi-date');
-        multiInputs[0].value = yesterdayString;
-        multiInputs[1].value = nowString;
+        document.getElementById('diffStart').value = formatDateTime(yesterday);
+        document.getElementById('diffEnd').value = formatDateTime(now);
     </script>
 </body>
 </html>
