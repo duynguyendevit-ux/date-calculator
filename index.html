@@ -705,11 +705,88 @@
                             sheet2.innerHTML += `<option value="${name}">${name}</option>`;
                         });
                         
+                        // Auto-detect common fields
+                        autoDetectCommonFields();
+                        
                         document.getElementById('sheetSelector').style.display = 'block';
                         showResult('excelResult', `✓ Loaded ${workbook.SheetNames.length} sheets`, false);
                     };
                     reader.readAsArrayBuffer(file);
                 });
+            }
+        });
+
+        // Auto-detect common fields between sheets
+        function autoDetectCommonFields() {
+            const sheet1Name = document.getElementById('sheet1').value;
+            const sheet2Name = document.getElementById('sheet2').value;
+            
+            if (!sheet1Name || !sheet2Name || !sheets[sheet1Name] || !sheets[sheet2Name]) return;
+            
+            const data1 = sheets[sheet1Name];
+            const data2 = sheets[sheet2Name];
+            
+            // Get headers (row 3 = index 2)
+            const headers1 = data1[2] || [];
+            const headers2 = data2[2] || [];
+            
+            // Find common fields (case-insensitive partial match)
+            let bestMatch1 = '';
+            let bestMatch2 = '';
+            let maxScore = 0;
+            
+            headers1.forEach(h1 => {
+                if (!h1) return;
+                headers2.forEach(h2 => {
+                    if (!h2) return;
+                    
+                    const h1Lower = String(h1).toLowerCase();
+                    const h2Lower = String(h2).toLowerCase();
+                    
+                    // Check for common keywords
+                    const keywords = ['serial', 'id', 'code', 'number', 'key', 'mã', 'số'];
+                    let score = 0;
+                    
+                    keywords.forEach(keyword => {
+                        if (h1Lower.includes(keyword) && h2Lower.includes(keyword)) {
+                            score += 10;
+                        }
+                    });
+                    
+                    // Exact match bonus
+                    if (h1Lower === h2Lower) score += 20;
+                    
+                    // Partial match bonus
+                    if (h1Lower.includes(h2Lower) || h2Lower.includes(h1Lower)) {
+                        score += 5;
+                    }
+                    
+                    if (score > maxScore) {
+                        maxScore = score;
+                        bestMatch1 = h1;
+                        bestMatch2 = h2;
+                    }
+                });
+            });
+            
+            // Auto-fill if found
+            if (bestMatch1 && bestMatch2) {
+                document.getElementById('key1').value = bestMatch1;
+                document.getElementById('key2').value = bestMatch2;
+                showResult('excelResult', `✓ Auto-detected: "${bestMatch1}" ↔ "${bestMatch2}"`, false);
+            }
+        }
+
+        // Add change listeners for sheet selectors
+        document.addEventListener('DOMContentLoaded', function() {
+            const sheet1Select = document.getElementById('sheet1');
+            const sheet2Select = document.getElementById('sheet2');
+            
+            if (sheet1Select) {
+                sheet1Select.addEventListener('change', autoDetectCommonFields);
+            }
+            if (sheet2Select) {
+                sheet2Select.addEventListener('change', autoDetectCommonFields);
             }
         });
 
