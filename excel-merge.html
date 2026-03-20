@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel Merge - Universal Tools</title>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+        h2 { color: #667eea; margin-bottom: 15px; }
+        label { display: block; margin: 10px 0 5px; font-weight: 600; }
+        input, select { 
+            width: 100%; 
+            padding: 10px; 
+            border: 2px solid #e0e0e0; 
+            border-radius: 8px; 
+            margin-bottom: 15px;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover { opacity: 0.9; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        .result {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+            border-left: 4px solid #4caf50;
+        }
+        .result.show { display: block; }
+        .error { background: #ffebee; border-left-color: #f44336; }
+        .loading { text-align: center; padding: 20px; display: none; }
+        .loading.show { display: block; }
+    </style>
+</head>
+<body>
+    <h1>📊 Excel Merge Tool</h1>
+    
+    <div class="section">
+        <h2>Upload File Excel</h2>
+        <input type="file" id="fileInput" accept=".xlsx,.xls">
+        <div id="sheetInfo"></div>
+    </div>
+
+    <div class="section" id="mergeSection" style="display:none;">
+        <h2>Cấu hình Merge</h2>
+        
+        <label>Sheet 1:</label>
+        <select id="sheet1"></select>
+        
+        <label>Cột key trong Sheet 1:</label>
+        <input type="text" id="key1" placeholder="Ví dụ: Số serial">
+        
+        <label>Sheet 2:</label>
+        <select id="sheet2"></select>
+        
+        <label>Cột key trong Sheet 2:</label>
+        <input type="text" id="key2" placeholder="Ví dụ: Serial Number">
+        
+        <label>Loại merge:</label>
+        <select id="mergeType">
+            <option value="left">Left (giữ tất cả rows từ Sheet 1)</option>
+            <option value="inner">Inner (chỉ giữ rows match)</option>
+        </select>
+        
+        <button onclick="mergeSheets()">🚀 Merge Excel</button>
+    </div>
+
+    <div class="loading" id="loading">
+        <p>Đang xử lý...</p>
+    </div>
+
+    <div class="result" id="result"></div>
+
+    <script>
+        let workbook = null;
+        let sheets = {};
+
+        document.getElementById('fileInput').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const data = new Uint8Array(e.target.result);
+                workbook = XLSX.read(data, {type: 'array'});
+                
+                // Load all sheets
+                workbook.SheetNames.forEach(name => {
+                    sheets[name] = XLSX.utils.sheet_to_json(workbook.Sheets[name], {header: 1});
+                });
+                
+                // Populate dropdowns
+                const sheet1 = document.getElementById('sheet1');
+                const sheet2 = document.getElementById('sheet2');
+                sheet1.innerHTML = '';
+                sheet2.innerHTML = '';
+                
+                workbook.SheetNames.forEach(name => {
+                    sheet1.innerHTML += `<option value="${name}">${name}</option>`;
+                    sheet2.innerHTML += `<option value="${name}">${name}</option>`;
+                });
+                
+                document.getElementById('sheetInfo').innerHTML = 
+                    `<p style="color: green;">✅ Loaded ${workbook.SheetNames.length} sheets</p>`;
+                document.getElementById('mergeSection').style.display = 'block';
+            };
+            reader.readAsArrayBuffer(file);
+        });
+
+        function mergeSheets() {
+            const sheet1Name = document.getElementById('sheet1').value;
+            const sheet2Name = document.getElementById('sheet2').value;
+            const key1 = document.getElementById('key1').value.trim();
+            const key2 = document.getElementById('key2').value.trim();
+            const mergeType = document.getElementById('mergeType').value;
+
+            if (!key1 || !key2) {
+                showResult('Vui lòng nhập tên cột key!', true);
+                return;
+            }
+
+            document.getElementById('loading').classList.add('show');
+            document.getElementById('result').classList.remove('show');
+
+            setTimeout(() => {
+                try {
+                    const data1 = sheets[sheet1Name];
+                    const data2 = sheets[sheet2Name];
+
+                    // Find header row (row 3 = index 2)
+                    const headers1 = data1[2];
+                    const headers2 = data2[2];
+
+                    // Find key columns
+                    const keyCol1 = headers1.indexOf(key1);
+                    const keyCol2 = headers2.indexOf(key2);
+
+                    if (keyCol1 === -1 || keyCol2 === -1) {
+                        throw new Error('Không tìm thấy cột key!');
+                    }
+
+                    // Build lookup from sheet2
+                    const lookup = {};
+                    for (let i = 3; i < data2.length; i++) {
+                        const key = data2[i][keyCol2];
+                        if (key) lookup[key] = data2[i];
+                    }
+
+                    // Merge
+                    const merged = [];
+                    
+                    // Copy first 3 rows (title, date, headers)
+                    merged.push(data1[0], data1[1]);
+                    
+                    // Merge headers
+                    const mergedHeaders = [...headers1];
+                    headers2.forEach((h, idx) => {
+                        if (idx !== keyCol2) mergedHeaders.push(h);
+                    });
+                    merged.push(mergedHeaders);
+
+                    // Merge data rows
+                    let matched = 0;
+                    for (let i = 3; i < data1.length; i++) {
+                        const row1 = data1[i];
+                        const key = row1[keyCol1];
+                        const mergedRow = [...row1];
+
+                        if (key && lookup[key]) {
+                            const row2 = lookup[key];
+                            row2.forEach((val, idx) => {
+                                if (idx !== keyCol2) mergedRow.push(val);
+                            });
+                            matched++;
+                        } else if (mergeType === 'left') {
+                            // Fill with empty for unmatched
+                            for (let j = 0; j < headers2.length - 1; j++) {
+                                mergedRow.push('');
+                            }
+                        } else {
+                            continue; // Skip for inner join
+                        }
+
+                        merged.push(mergedRow);
+                    }
+
+                    // Create new workbook
+                    const newWb = XLSX.utils.book_new();
+                    const newWs = XLSX.utils.aoa_to_sheet(merged);
+                    XLSX.utils.book_append_sheet(newWb, newWs, 'Merged');
+
+                    // Download
+                    XLSX.writeFile(newWb, 'merged_output.xlsx');
+
+                    showResult(`✅ Merge thành công! Matched: ${matched} rows`, false);
+                } catch (error) {
+                    showResult('❌ Lỗi: ' + error.message, true);
+                } finally {
+                    document.getElementById('loading').classList.remove('show');
+                }
+            }, 100);
+        }
+
+        function showResult(message, isError) {
+            const result = document.getElementById('result');
+            result.textContent = message;
+            result.classList.add('show');
+            if (isError) {
+                result.classList.add('error');
+            } else {
+                result.classList.remove('error');
+            }
+        }
+    </script>
+</body>
+</html>
