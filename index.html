@@ -406,23 +406,29 @@ Hoặc: 2026-03-20 11:15:18 2026-03-20 11:15:19"></textarea>
                 return;
             }
             
-            // Split by newlines or spaces
-            const lines = text.split(/[\n\s]+/).filter(line => line.trim());
+            // Split by newlines first
+            let lines = text.split('\n').filter(line => line.trim());
             
-            // Parse dates with various formats
+            // If only one line, try to extract datetime patterns
+            if (lines.length === 1) {
+                const line = lines[0];
+                // Match datetime patterns: YYYY-MM-DD HH:MM:SS
+                const datePattern = /\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}/g;
+                const matches = line.match(datePattern);
+                if (matches) {
+                    lines = matches;
+                } else {
+                    // Try date only: YYYY-MM-DD
+                    const dateOnlyPattern = /\d{4}-\d{2}-\d{2}/g;
+                    const dateMatches = line.match(dateOnlyPattern);
+                    if (dateMatches) {
+                        lines = dateMatches;
+                    }
+                }
+            }
+            
+            // Parse dates
             const dates = [];
-            const parsePatterns = [
-                // ISO format: 2026-03-20 11:15:18
-                /(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2})/,
-                // ISO with milliseconds: 2026-03-20 11:15:18.123
-                /(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}\.\d+)/,
-                // ISO date only: 2026-03-20
-                /(\d{4}-\d{2}-\d{2})/,
-                // Timestamp: 1710912918000
-                /^(\d{13})$/,
-                // Timestamp seconds: 1710912918
-                /^(\d{10})$/
-            ];
             
             lines.forEach(line => {
                 let parsed = null;
