@@ -237,6 +237,37 @@
             transition: background 0.2s ease;
         }
 
+        input[type="file"] {
+            width: 100%;
+            padding: var(--spacing-4);
+            background: var(--surface-container-low);
+            border: none;
+            border-radius: var(--radius-default);
+            font-family: var(--font-sans);
+            font-size: 0.875rem;
+            color: var(--on-surface);
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        input[type="file"]::file-selector-button {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-container) 100%);
+            color: var(--background);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-default);
+            font-family: var(--font-sans);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-right: 1rem;
+            transition: transform 0.2s ease;
+        }
+
+        input[type="file"]::file-selector-button:hover {
+            transform: translateY(-1px);
+        }
+
         input:focus,
         textarea:focus,
         select:focus {
