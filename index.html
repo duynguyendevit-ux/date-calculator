@@ -972,11 +972,12 @@
                 const headers1 = data1[2];
                 const headers2 = data2[2];
 
-                const keyCol1 = headers1.indexOf(key1);
-                const keyCol2 = headers2.indexOf(key2);
+                // Trim and find exact match
+                const keyCol1 = headers1.findIndex(h => String(h).trim() === String(key1).trim());
+                const keyCol2 = headers2.findIndex(h => String(h).trim() === String(key2).trim());
 
                 if (keyCol1 === -1 || keyCol2 === -1) {
-                    throw new Error('Key column not found');
+                    throw new Error(`Key column not found. Sheet1: "${key1}" (${keyCol1}), Sheet2: "${key2}" (${keyCol2})`);
                 }
 
                 const lookup = {};
