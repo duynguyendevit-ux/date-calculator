@@ -808,12 +808,16 @@
             let maxScore = 0;
             
             headers1.forEach(h1 => {
-                if (!h1) return;
+                if (!h1 || typeof h1 !== 'string' || h1.trim().length < 2) return;
                 headers2.forEach(h2 => {
-                    if (!h2) return;
+                    if (!h2 || typeof h2 !== 'string' || h2.trim().length < 2) return;
                     
-                    const h1Lower = String(h1).toLowerCase();
-                    const h2Lower = String(h2).toLowerCase();
+                    const h1Lower = String(h1).toLowerCase().trim();
+                    const h2Lower = String(h2).toLowerCase().trim();
+                    
+                    // Skip if just numbers or single chars
+                    if (/^\d+$/.test(h1Lower) || /^\d+$/.test(h2Lower)) return;
+                    if (h1Lower.length < 2 || h2Lower.length < 2) return;
                     
                     // Check for common keywords
                     const keywords = ['serial', 'id', 'code', 'number', 'key', 'mã', 'số'];
@@ -842,10 +846,14 @@
             });
             
             // Auto-fill if found
-            if (bestMatch1 && bestMatch2) {
+            if (bestMatch1 && bestMatch2 && maxScore > 0) {
                 document.getElementById('key1').value = bestMatch1;
                 document.getElementById('key2').value = bestMatch2;
                 showResult('excelResult', `✓ Auto-detected: "${bestMatch1}" ↔ "${bestMatch2}"`, false);
+            } else {
+                document.getElementById('key1').value = '';
+                document.getElementById('key2').value = '';
+                showResult('excelResult', '⚠ No common key columns detected. Please enter manually.', false);
             }
         }
 
