@@ -325,6 +325,37 @@
             margin-top: 0.5rem;
             font-style: italic;
         }
+
+        /* Diff highlighting */
+        .diff-line {
+            padding: 0.25rem 0.5rem;
+            margin: 0.125rem 0;
+            border-radius: 0.125rem;
+        }
+
+        .diff-added {
+            background: rgba(34, 197, 94, 0.15);
+            color: #16a34a;
+        }
+
+        .diff-removed {
+            background: rgba(239, 68, 68, 0.15);
+            color: #dc2626;
+        }
+
+        .diff-unchanged {
+            color: var(--on-surface-variant);
+        }
+
+        [data-theme="dark"] .diff-added {
+            background: rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+        }
+
+        [data-theme="dark"] .diff-removed {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+        }
     </style>
 </head>
 <body>
@@ -421,9 +452,34 @@
 
         <!-- Text Tools -->
         <div id="text" class="tool-content">
-            <div class="coming-soon">
-                <h3>Text Tools</h3>
-                <p>Coming soon</p>
+            <div class="section">
+                <h2>JSON Formatter</h2>
+                <div class="input-group">
+                    <label>Input JSON</label>
+                    <textarea id="jsonInput" placeholder='{"name":"John","age":30}'></textarea>
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <button onclick="formatJSON()">Format</button>
+                    <button onclick="minifyJSON()">Minify</button>
+                    <button onclick="validateJSON()">Validate</button>
+                </div>
+                <div class="result" id="jsonResult"></div>
+            </div>
+
+            <div class="section">
+                <h2>Text Diff Comparison</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-4);">
+                    <div class="input-group">
+                        <label>Text A (Original)</label>
+                        <textarea id="textA" placeholder="Original text..."></textarea>
+                    </div>
+                    <div class="input-group">
+                        <label>Text B (Modified)</label>
+                        <textarea id="textB" placeholder="Modified text..."></textarea>
+                    </div>
+                </div>
+                <button onclick="compareText()">Compare</button>
+                <div class="result" id="diffResult"></div>
             </div>
         </div>
 
@@ -703,6 +759,122 @@
             }
 
             showResult('textResult', result, false);
+        }
+
+        function showResult(id, message, isError) {
+            const result = document.getElementById(id);
+            result.textContent = message;
+            result.classList.add('show');
+            if (isError) {
+                result.classList.add('error');
+            } else {
+                result.classList.remove('error');
+            }
+        }
+
+        // JSON Formatter
+        function formatJSON() {
+            const input = document.getElementById('jsonInput').value.trim();
+            if (!input) {
+                showResult('jsonResult', 'Please enter JSON', true);
+                return;
+            }
+
+            try {
+                const parsed = JSON.parse(input);
+                const formatted = JSON.stringify(parsed, null, 2);
+                showResult('jsonResult', formatted, false);
+            } catch (error) {
+                showResult('jsonResult', '✗ Invalid JSON: ' + error.message, true);
+            }
+        }
+
+        function minifyJSON() {
+            const input = document.getElementById('jsonInput').value.trim();
+            if (!input) {
+                showResult('jsonResult', 'Please enter JSON', true);
+                return;
+            }
+
+            try {
+                const parsed = JSON.parse(input);
+                const minified = JSON.stringify(parsed);
+                showResult('jsonResult', minified, false);
+            } catch (error) {
+                showResult('jsonResult', '✗ Invalid JSON: ' + error.message, true);
+            }
+        }
+
+        function validateJSON() {
+            const input = document.getElementById('jsonInput').value.trim();
+            if (!input) {
+                showResult('jsonResult', 'Please enter JSON', true);
+                return;
+            }
+
+            try {
+                JSON.parse(input);
+                showResult('jsonResult', '✓ Valid JSON', false);
+            } catch (error) {
+                showResult('jsonResult', '✗ Invalid JSON: ' + error.message, true);
+            }
+        }
+
+        // Text Diff Comparison
+        function compareText() {
+            const textA = document.getElementById('textA').value;
+            const textB = document.getElementById('textB').value;
+
+            if (!textA || !textB) {
+                showResult('diffResult', 'Please enter both texts', true);
+                return;
+            }
+
+            const linesA = textA.split('\n');
+            const linesB = textB.split('\n');
+
+            let result = '';
+            const maxLines = Math.max(linesA.length, linesB.length);
+
+            for (let i = 0; i < maxLines; i++) {
+                const lineA = linesA[i] || '';
+                const lineB = linesB[i] || '';
+
+                if (lineA === lineB) {
+                    result += `  ${lineA}\n`;
+                } else {
+                    if (lineA && !linesB.includes(lineA)) {
+                        result += `- ${lineA}\n`;
+                    }
+                    if (lineB && !linesA.includes(lineB)) {
+                        result += `+ ${lineB}\n`;
+                    }
+                }
+            }
+
+            const resultEl = document.getElementById('diffResult');
+            resultEl.innerHTML = '';
+            
+            result.split('\n').forEach(line => {
+                const div = document.createElement('div');
+                div.className = 'diff-line';
+                
+                if (line.startsWith('+ ')) {
+                    div.classList.add('diff-added');
+                    div.textContent = line;
+                } else if (line.startsWith('- ')) {
+                    div.classList.add('diff-removed');
+                    div.textContent = line;
+                } else {
+                    div.classList.add('diff-unchanged');
+                    div.textContent = line;
+                }
+                
+                resultEl.appendChild(div);
+            });
+
+            resultEl.classList.add('show');
+            resultEl.classList.remove('error');
         }
 
         function showResult(id, message, isError) {
