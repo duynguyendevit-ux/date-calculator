@@ -315,6 +315,30 @@
             .tab {
                 flex: 1;
                 min-width: 120px;
+                padding: 0.625rem 1rem;
+                font-size: 0.8125rem;
+            }
+
+            header {
+                flex-direction: column;
+                gap: var(--spacing-4);
+            }
+
+            .theme-toggle {
+                align-self: flex-end;
+            }
+
+            /* Text Tools responsive */
+            .section > div[style*="grid-template-columns"] {
+                grid-template-columns: 1fr !important;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            .section > div[style*="display: flex"] {
+                flex-direction: column;
             }
         }
 
