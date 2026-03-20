@@ -402,6 +402,33 @@
             background: rgba(239, 68, 68, 0.2);
             color: #f87171;
         }
+
+        /* Preview table */
+        .preview-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.75rem;
+            font-family: var(--font-mono);
+        }
+
+        .preview-table th {
+            background: var(--surface-container-low);
+            padding: 0.5rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--on-surface);
+            white-space: nowrap;
+        }
+
+        .preview-table td {
+            padding: 0.5rem;
+            border-bottom: 1px solid var(--surface-container);
+            color: var(--on-surface-variant);
+        }
+
+        .preview-table tr:hover {
+            background: var(--surface-container-low);
+        }
     </style>
 </head>
 <body>
@@ -498,6 +525,14 @@
                     <button onclick="mergeExcel()">Merge</button>
                 </div>
                 <div class="result" id="excelResult"></div>
+                
+                <!-- Preview Section -->
+                <div id="previewSection" style="display:none; margin-top: var(--spacing-8);">
+                    <h3 style="color: var(--primary); margin-bottom: var(--spacing-4);">Preview (First 5 Rows)</h3>
+                    <div style="overflow-x: auto;">
+                        <div id="previewTable"></div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -855,6 +890,9 @@
                     merged.push(mergedRow);
                 }
 
+                // Show preview
+                showPreview(merged);
+
                 const newWb = XLSX.utils.book_new();
                 const newWs = XLSX.utils.aoa_to_sheet(merged);
                 XLSX.utils.book_append_sheet(newWb, newWs, 'Merged');
@@ -865,6 +903,33 @@
             } catch (error) {
                 showResult('excelResult', '✗ Error: ' + error.message, true);
             }
+        }
+
+        // Show preview table
+        function showPreview(data) {
+            const previewSection = document.getElementById('previewSection');
+            const previewTable = document.getElementById('previewTable');
+            
+            const headers = data[2];
+            const rows = data.slice(3, 8); // First 5 data rows
+            
+            let html = '<table class="preview-table"><thead><tr>';
+            headers.forEach(h => {
+                html += `<th>${h || ''}</th>`;
+            });
+            html += '</tr></thead><tbody>';
+            
+            rows.forEach(row => {
+                html += '<tr>';
+                row.forEach(cell => {
+                    html += `<td>${cell !== undefined && cell !== null ? cell : ''}</td>`;
+                });
+                html += '</tr>';
+            });
+            
+            html += '</tbody></table>';
+            previewTable.innerHTML = html;
+            previewSection.style.display = 'block';
         }
 
         // Date parsing
