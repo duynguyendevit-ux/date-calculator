@@ -538,7 +538,7 @@
                     </div>
                     <div class="input-group">
                         <label>Key Column in Sheet 1</label>
-                        <input type="text" id="key1" placeholder="e.g., Số serial">
+                        <select id="key1"></select>
                     </div>
                     <div class="input-group">
                         <label>Sheet 2</label>
@@ -546,7 +546,7 @@
                     </div>
                     <div class="input-group">
                         <label>Key Column in Sheet 2</label>
-                        <input type="text" id="key2" placeholder="e.g., Serial Number">
+                        <select id="key2"></select>
                     </div>
                     <div class="input-group">
                         <label>Merge Type</label>
@@ -794,8 +794,8 @@
                             sheet2.innerHTML += `<option value="${name}">${name}</option>`;
                         });
                         
-                        // Auto-detect common fields
-                        autoDetectCommonFields();
+                        // Populate column dropdowns
+                        populateColumnDropdowns();
                         
                         // Show sheet preview
                         showSheetPreview(sheet1Name);
@@ -809,7 +809,7 @@
         });
 
         // Auto-detect common fields between sheets
-        function autoDetectCommonFields() {
+        function populateColumnDropdowns() {
             const sheet1Name = document.getElementById('sheet1').value;
             const sheet2Name = document.getElementById('sheet2').value;
             
@@ -821,6 +821,34 @@
             // Get headers (row 3 = index 2)
             const headers1 = data1[2] || [];
             const headers2 = data2[2] || [];
+            
+            // Populate key1 dropdown
+            const key1Select = document.getElementById('key1');
+            key1Select.innerHTML = '<option value="">-- Select column --</option>';
+            headers1.forEach((h, idx) => {
+                if (h && typeof h === 'string' && h.trim().length > 0) {
+                    key1Select.innerHTML += `<option value="${h}">${h}</option>`;
+                }
+            });
+            
+            // Populate key2 dropdown
+            const key2Select = document.getElementById('key2');
+            key2Select.innerHTML = '<option value="">-- Select column --</option>';
+            headers2.forEach((h, idx) => {
+                if (h && typeof h === 'string' && h.trim().length > 0) {
+                    key2Select.innerHTML += `<option value="${h}">${h}</option>`;
+                }
+            });
+            
+            // Auto-select if there's a good match
+            autoSelectBestMatch(headers1, headers2);
+        }
+
+        function autoSelectBestMatch(headers1, headers2) {
+            const sheet1Name = document.getElementById('sheet1').value;
+            const sheet2Name = document.getElementById('sheet2').value;
+            
+            if (!sheet1Name || !sheet2Name || !sheets[sheet1Name] || !sheets[sheet2Name]) return;
             
             // Find common fields (case-insensitive partial match)
             let bestMatch1 = '';
@@ -865,15 +893,11 @@
                 });
             });
             
-            // Auto-fill if found
+            // Auto-select if found
             if (bestMatch1 && bestMatch2 && maxScore > 0) {
                 document.getElementById('key1').value = bestMatch1;
                 document.getElementById('key2').value = bestMatch2;
-                showResult('excelResult', `✓ Auto-detected: "${bestMatch1}" ↔ "${bestMatch2}"`, false);
-            } else {
-                document.getElementById('key1').value = '';
-                document.getElementById('key2').value = '';
-                showResult('excelResult', '⚠ No common key columns detected. Please enter manually.', false);
+                showResult('excelResult', `✓ Suggested: "${bestMatch1}" ↔ "${bestMatch2}"`, false);
             }
         }
 
@@ -884,12 +908,12 @@
             
             if (sheet1Select) {
                 sheet1Select.addEventListener('change', function() {
-                    autoDetectCommonFields();
+                    populateColumnDropdowns();
                     showSheetPreview(sheet1Select.value);
                 });
             }
             if (sheet2Select) {
-                sheet2Select.addEventListener('change', autoDetectCommonFields);
+                sheet2Select.addEventListener('change', populateColumnDropdowns);
             }
         });
 
@@ -897,12 +921,12 @@
         function mergeExcel() {
             const sheet1Name = document.getElementById('sheet1').value;
             const sheet2Name = document.getElementById('sheet2').value;
-            const key1 = document.getElementById('key1').value.trim();
-            const key2 = document.getElementById('key2').value.trim();
+            const key1 = document.getElementById('key1').value;
+            const key2 = document.getElementById('key2').value;
             const mergeType = document.getElementById('mergeType').value;
 
             if (!key1 || !key2) {
-                showResult('excelResult', 'Please enter key column names', true);
+                showResult('excelResult', 'Please select key columns', true);
                 return;
             }
 
